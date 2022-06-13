@@ -32,6 +32,16 @@ public class MainActivity extends AppCompatActivity {
     private List<String> listaNomeCursos;
     private ArrayAdapter<String> adapter;
 
+    private EditText etDepartmentName;
+    private EditText etDepartmentId;
+    private Button btEnviarDep;
+    private Button btEditarDep;
+    private ListView lvDepartmentsLists;
+
+    private DepartamentoService requestDepartamento;
+    private DepartamentoResponse departamentoResponse;
+    private List<String> listaNomeDepartamento;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         cadastroCurso = findViewById(R.id.etCadastroCurso);
         botaoCadastro = findViewById(R.id.btCadastro);
         etEditarCurso = findViewById(R.id.etEditarCurso);
-        btDelete = findViewById(R.id.btDelete);
+        btDelete = findViewById(R.id.btDeletar);
         lvListaCurso = findViewById(R.id.lvListarCurso);
         adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, listaNomeCursos);
         lvListaCurso.setAdapter(adapter);
@@ -165,6 +175,77 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+    }
+
+    private void executarRequestPost(DepartamentoPost departamentoPost) {
+        requestDepartamento.createRequest(departamentoPost).enqueue(new Callback<DepartamentoResponse>() {
+            @Override
+            public void onResponse(Call<DepartamentoResponse> call, Response<DepartamentoResponse> response) {
+                departamentoResponse = response.body();
+                Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<DepartamentoResponse> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void putRequest (DepartamentoPost departamentoPut, int id) {
+        requestDepartamento.putRequest(departamentoPut, id).enqueue(new Callback<DepartamentoResponse>() {
+            @Override
+            public void onResponse(Call<DepartamentoResponse> call, Response<DepartamentoResponse> response) {
+                Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<DepartamentoResponse> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void executarRequestDeleteDep(View view) {
+        String idDigitado = etDepartmentId.getText().toString();
+        int id = Integer.parseInt(idDigitado);
+
+        requestDepartamento.deleteRequest(id).enqueue(new Callback<Object>() {
+            @Override
+            public void onResponse(Call<Object> call, Response<Object> response) {
+                Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<Object> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void executarRequestGetAll2(View view) {
+        requestDepartamento.getAllCourses().enqueue(new Callback<List<DepartamentoResponse>>() {
+            @Override
+            public void onResponse(Call<List<DepartamentoResponse>> call, Response<List<DepartamentoResponse>> response) {
+                Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_LONG).show();
+
+                List<DepartamentoResponse> departmentList = response.body();
+
+                for (DepartamentoResponse department : departmentList) {
+                    Log.i(">>> Result", department.getId() + " " + department.getName());
+
+                    listaNomeDepartamento.add(department.getName());
+                }
+
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<List<DepartamentoResponse>> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_LONG).show();
+            }
+        });
 
     }
 }

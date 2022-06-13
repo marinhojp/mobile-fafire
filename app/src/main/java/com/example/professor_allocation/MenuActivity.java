@@ -24,5 +24,11 @@ public class MenuActivity extends AppCompatActivity {
             startActivity(mensageiro);
 
         });
+
+        btDepartamento.setOnClickListener(view ->{
+            Intent mensageiroDep = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(mensageiroDep);
+
+        });
     }
 }
